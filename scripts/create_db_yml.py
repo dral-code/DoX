@@ -5,13 +5,7 @@ if os.path.exists(filename):
     os.remove(filename)
 
 file = open (filename, "a")
-file.write("---\
-# vars file for Bind setup\
-domain: rsx218-dox.cnam.fr\
-\
-rev_domain: 0.10.in-addr.arpa\
-\
-records:\n")
+file.write("---\n# vars file for Bind setup\ndomain: rsx218-dox.cnam.fr\n\nrev_domain: 0.10.in-addr.arpa\n\nrecords:\n")
 
 for domain in range(0,251):
     for host in range(1,251):
