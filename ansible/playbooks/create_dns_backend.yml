@@ -1,0 +1,9 @@
+---
+- name: Set up Bind
+  hosts: 10.1.0.1
+  gather_facts: true
+  user: vagrant
+  become: true
+
+  roles:
+    - dns-bind9
