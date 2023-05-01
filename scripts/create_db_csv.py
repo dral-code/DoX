@@ -1,6 +1,6 @@
 import os
 
-filename = "files/list_of_dns_entry.csv"
+filename = "../shared_files/list_of_dns_entry.csv"
 if os.path.exists(filename):
     os.remove(filename)
 

@@ -1,6 +1,6 @@
 ---
 - name: Set up Bind
-  hosts: 10.1.0.1
+  hosts: 10.1.0.2
   gather_facts: true
   user: vagrant
   become: true
