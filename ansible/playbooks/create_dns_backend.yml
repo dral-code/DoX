@@ -1,9 +1,9 @@
 ---
 - name: Set up Bind
-  hosts: 10.1.0.2
+  hosts: vm-backend
   gather_facts: true
   user: vagrant
   become: true
 
   roles:
-    - dns-bind9
+    - '../roles/dns-bind9'
