@@ -1,6 +1,6 @@
-
+ansible_ssh_extra_args=' -o StrictHostKeyChecking=no'
 controller ansible_connection=local
-vm-backend  ansible_host=192.168.56.2 ansible_ssh_private_key_file=../../infra/vm-backend/.vagrant/machines/default/virtualbox/private_key
+vm-backend  ansible_host=192.168.56.2 host_name=vm-backend.rsx218-dox.cnam.fr ansible_ssh_private_key_file=../../infra/vm-backend/.vagrant/machines/default/libvirt/private_key
 
 [bind9]
 vm-backend

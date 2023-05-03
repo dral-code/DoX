@@ -1,5 +1,11 @@
 ---
 # tasks file for Bind setup
+- name: 'create serial based on actual timestamp'
+  command: date +%m%d%H%M%S
+  register: timestamp
+  check_mode: false
+  run_once: true
+
 - name: Install bind
   yum:
     pkg: bind
@@ -8,6 +14,7 @@
 - name: Set hostname
   hostname:
     name: "{{ host_name }}"
+    use: 'systemd'
 
 - name: Set hostname fact
   set_fact:
@@ -68,10 +75,3 @@
     mode: 0640
   with_dict: "{{ records }}"
   notify: restart named
-
-- name: Open firewall port
-  firewalld:
-    service: dns
-    permanent: true
-    state: enabled
-    immediate: yes
