@@ -3,25 +3,3 @@
 domain: rsx218-dox.cnam.fr
 
 rev_domain: 16.172.in-addr.arpa
-
-records:
-    host1.domain0: {forward: 172.16.0.1, type: A, last: 1.0, rev: 16.172.in-addr.arpa.}
-    host2.domain0: {forward: 172.16.0.2, type: A, last: 2.0, rev: 16.172.in-addr.arpa.}
-    host3.domain0: {forward: 172.16.0.3, type: A, last: 3.0, rev: 16.172.in-addr.arpa.}
-    host4.domain0: {forward: 172.16.0.4, type: A, last: 4.0, rev: 16.172.in-addr.arpa.}
-    host1.domain1: {forward: 172.16.1.1, type: A, last: 1.1, rev: 16.172.in-addr.arpa.}
-    host2.domain1: {forward: 172.16.1.2, type: A, last: 2.1, rev: 16.172.in-addr.arpa.}
-    host3.domain1: {forward: 172.16.1.3, type: A, last: 3.1, rev: 16.172.in-addr.arpa.}
-    host4.domain1: {forward: 172.16.1.4, type: A, last: 4.1, rev: 16.172.in-addr.arpa.}
-    host1.domain2: {forward: 172.16.2.1, type: A, last: 1.2, rev: 16.172.in-addr.arpa.}
-    host2.domain2: {forward: 172.16.2.2, type: A, last: 2.2, rev: 16.172.in-addr.arpa.}
-    host3.domain2: {forward: 172.16.2.3, type: A, last: 3.2, rev: 16.172.in-addr.arpa.}
-    host4.domain2: {forward: 172.16.2.4, type: A, last: 4.2, rev: 16.172.in-addr.arpa.}
-    host1.domain3: {forward: 172.16.3.1, type: A, last: 1.3, rev: 16.172.in-addr.arpa.}
-    host2.domain3: {forward: 172.16.3.2, type: A, last: 2.3, rev: 16.172.in-addr.arpa.}
-    host3.domain3: {forward: 172.16.3.3, type: A, last: 3.3, rev: 16.172.in-addr.arpa.}
-    host4.domain3: {forward: 172.16.3.4, type: A, last: 4.3, rev: 16.172.in-addr.arpa.}
-    host1.domain4: {forward: 172.16.4.1, type: A, last: 1.4, rev: 16.172.in-addr.arpa.}
-    host2.domain4: {forward: 172.16.4.2, type: A, last: 2.4, rev: 16.172.in-addr.arpa.}
-    host3.domain4: {forward: 172.16.4.3, type: A, last: 3.4, rev: 16.172.in-addr.arpa.}
-    host4.domain4: {forward: 172.16.4.4, type: A, last: 4.4, rev: 16.172.in-addr.arpa.}
