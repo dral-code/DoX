@@ -1,0 +1,46 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+Vagrant.configure("2") do |config|
+  (1..3).each do |i|
+    config.vm.define "client-#{i}" do |node|
+    # Every Vagrant development environment requires a box. You can search for
+    # boxes at https://vagrantcloud.com/search.
+      node.vm.box = "almalinux/8"
+  
+    # Create a private network, which allows host-only access to the machine
+    # using a specific IP.
+      node.vm.network "private_network", ip: "192.168.56.1#{i}"
+  
+    # Provider-specific configuration so you can fine-tune various
+    # backing providers for Vagrant. These expose provider-specific options.
+    # Example for VirtualBox:
+    #
+      node.vm.provider "libvirt" do |vb|
+    #   # Customize the amount of memory on the VM:
+       vb.memory = "1024"
+      end
+  
+      node.vm.hostname = "client-#{i}"
+      node.vm.provision "file", source: "../../shared_files/list_of_dns_entry.csv", destination: "list_of_dns_entry.csv"
+      node.vm.provision "file", source: "../../scripts/request_client_dns.py", destination: "request_client_dns.py"
+    # Enable provisioning with a shell script. Additional provisioners such as
+    # Ansible, Chef, Docker, Puppet and Salt are also available. Please see the
+    # documentation for more information about their specific syntax and use.
+      node.vm.provision "shell", inline: <<-SHELL
+        dnf install epel-release -y
+        yum config-manager --set-enabled powertools
+        dnf install policycoreutils-python-utils net-tools snapd python3 python3-pandas -y
+        systemctl enable --now snapd.socket
+        ln -s /var/lib/snapd/snap /snap
+        sleep 60
+        snap install dnslookup
+        reboot
+      SHELL
+    end
+  end
+end
