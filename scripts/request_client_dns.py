@@ -1,11 +1,15 @@
 import subprocess
 import random
+import datetime
+import socket
 
 n = 250
 ihost = [i for i in range (1, n+1)]
 random.shuffle(ihost)
 idomain = [i for i in range (0, n+1)]
 random.shuffle(idomain)
+print("client,reqID,url,timestamp")
+hostname = socket.gethostname()
 
 line_count = 0
 for d in idomain:
@@ -16,6 +20,6 @@ for d in idomain:
         cmd_str = "nohup dnslookup host" + url + " 192.168.56.2:453" + dev_null + " &"
         subprocess.run(cmd_str, shell=True)
         line_count += 1
-        print("request num : " + str(line_count) + " for " + url)
+        print(hostname + "," + str(line_count) + "," + url + "," + str(datetime.datetime.now()))
 #        if line_count == 5:
 #            break
