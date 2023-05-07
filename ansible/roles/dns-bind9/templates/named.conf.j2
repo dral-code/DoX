@@ -46,6 +46,10 @@ options {
 	session-keyfile "/run/named/session.key";
 };
 
+statistics-channels {
+  inet 127.0.0.1 port 8053 allow { 127.0.0.1; };
+};
+
 logging {
         channel default_debug {
                 file "data/named.run";

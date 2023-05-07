@@ -64,9 +64,28 @@ Vagrant.configure("2") do |config|
   # Enable provisioning with a shell script. Additional provisioners such as
   # Ansible, Chef, Docker, Puppet and Salt are also available. Please see the
   # documentation for more information about their specific syntax and use.
+  config.vm.provision "file", source: "../../shared_files/node_exporter.service", destination: "node_exporter.service"
+  config.vm.provision "file", source: "../../shared_files/bind_exporter.service", destination: "bind_exporter.service"
+  config.vm.provision "file", source: "../../shared_files/node_exporter-1.5.0.linux-amd64.tar.gz", destination: "node_exporter-1.5.0.linux-amd64.tar.gz"
+  config.vm.provision "file", source: "../../shared_files/bind_exporter-0.6.1.linux-amd64.tar.gz", destination: "bind_exporter-0.6.1.linux-amd64.tar.gz"
   config.vm.provision "shell", inline: <<-SHELL
     yum update -y
-    dnf install policycoreutils-python-utils net-tools -y
+    dnf install policycoreutils-python-utils net-tools wget -y
     semanage port -a -t dns_port_t -p udp 453
+    semanage port -a -t dns_port_t -p tcp 8053
+    useradd -rs /bin/false node_exporter
+    groupadd --system prometheus
+    useradd -s /sbin/nologin --system -g prometheus prometheus
+    tar xvzf node_exporter*.tar.gz 
+    tar xvzf bind_exporter*.tar.gz 
+    cp /home/vagrant/node_exporter*/node_exporter /usr/local/bin
+    cp /home/vagrant/bind_exporter*/bind_exporter /usr/local/bin
+    cp /home/vagrant/*_exporter.service /lib/systemd/system
+    restorecon -Rv /usr/local/bin
+    systemctl daemon-reload
+    systemctl enable node_exporter
+    systemctl start node_exporter.service 
+    systemctl enable bind_exporter
+    systemctl start bind_exporter.service 
   SHELL
 end
