@@ -70,7 +70,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision "file", source: "../../shared_files/bind_exporter-0.6.1.linux-amd64.tar.gz", destination: "bind_exporter-0.6.1.linux-amd64.tar.gz"
   config.vm.provision "shell", inline: <<-SHELL
     yum update -y
-    dnf install policycoreutils-python-utils net-tools wget -y
+    dnf install policycoreutils-python-utils net-tools -y
     semanage port -a -t dns_port_t -p udp 453
     semanage port -a -t dns_port_t -p tcp 8053
     useradd -rs /bin/false node_exporter

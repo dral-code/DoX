@@ -17,7 +17,7 @@ for d in idomain:
         dev_null = " > /dev/null 2>&1"
         #dev_null = ""
         url = "host" + str(h) + ".domain" + str(d) + ".rsx218-dox.cnam.fr"
-        cmd_str = "nohup dnslookup host" + url + " 192.168.56.2:453" + dev_null + " &"
+        cmd_str = "dnslookup host" + url + " 192.168.56.2:453" + dev_null + " &"
         subprocess.run(cmd_str, shell=True)
         line_count += 1
         print(hostname + "," + str(line_count) + "," + url + "," + str(datetime.datetime.now()))
