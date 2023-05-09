@@ -34,8 +34,9 @@ func main() {
 	fmt.Println("client,reqID,url,timestamp")
 	var counter int = 1
 	for _, url := range list {
-		fmt.Printf("%s,%d,%s,%s\n", hostname, counter, CleanStr(url), GetTimeMs())
-		cmd := exec.Command("dnslookup", url, "192.168.56.2:453")
+		clean_url := CleanStr(url)
+		fmt.Printf("%s,%d,%s,%s\n", hostname, counter, clean_url, GetTimeMs())
+		cmd := exec.Command("dnslookup", clean_url, "192.168.56.2:453")
 		err := cmd.Start()
 		if err != nil {
 			fmt.Println(err.Error())
