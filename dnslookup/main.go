@@ -14,7 +14,6 @@ import (
 
 	"github.com/AdguardTeam/dnsproxy/upstream"
 	"github.com/AdguardTeam/golibs/log"
-	"github.com/ameshkov/dnsstamps"
 	"github.com/miekg/dns"
 )
 
@@ -58,7 +57,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	if len(os.Args) != 3 && len(os.Args) != 4 && len(os.Args) != 5 {
+	if len(os.Args) != 3 && len(os.Args) != 4 {
 		log.Printf("Wrong number of arguments")
 		usage()
 		os.Exit(1)
@@ -99,24 +98,6 @@ func main() {
 			log.Fatalf("invalid IP specified: %s", os.Args[3])
 		}
 		opts.ServerIPAddrs = []net.IP{ip}
-	}
-
-	if len(os.Args) == 5 {
-		// DNSCrypt parameters
-		providerName := os.Args[3]
-		serverPkStr := os.Args[4]
-
-		serverPk, err := hex.DecodeString(strings.ReplaceAll(serverPkStr, ":", ""))
-		if err != nil {
-			log.Fatalf("Invalid server PK %s: %s", serverPkStr, err)
-		}
-
-		var stamp dnsstamps.ServerStamp
-		stamp.Proto = dnsstamps.StampProtoTypeDNSCrypt
-		stamp.ServerAddrStr = server
-		stamp.ProviderName = providerName
-		stamp.ServerPk = serverPk
-		server = stamp.String()
 	}
 
 	u, err := upstream.AddressToUpstream(server, opts)
