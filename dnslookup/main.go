@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"net"
 	"os"
 	"strconv"
@@ -57,7 +58,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	if len(os.Args) != 3 && len(os.Args) != 4 {
+	if len(os.Args) != 2 && len(os.Args) != 3 && len(os.Args) != 4 {
 		log.Printf("Wrong number of arguments")
 		usage()
 		os.Exit(1)
@@ -74,77 +75,110 @@ func main() {
 		timeout = i
 	}
 
-	domain := os.Args[1]
-	server := os.Args[2]
-
-	var httpVersions []upstream.HTTPVersion
-	if http3Enabled {
-		httpVersions = []upstream.HTTPVersion{
-			upstream.HTTPVersion3,
-			upstream.HTTPVersion2,
-			upstream.HTTPVersion11,
+	hostname, err := os.Hostname()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	var n int
+	n = 250
+	rand.Seed(time.Now().UnixNano())
+	iHost := Shuffle(NewSlice(1, n, 1))
+	iDomain := Shuffle(NewSlice(0, n, 1))
+	list := make([]string, 0, 1+(n*n))
+	for _, d := range iDomain {
+		for _, h := range iHost {
+			url := "host" + strconv.Itoa(h) + ".domain" + strconv.Itoa(d) + ".rsx218-dox.cnam.fr\n"
+			list = append(list, url)
 		}
 	}
+	rand.Shuffle(len(list), func(i, j int) {
+		list[i], list[j] = list[j], list[i]
+	})
+	now := time.Now().Unix()
+	resultFileName := hostname + "_result_" + strconv.FormatInt(now, 10) + ".log"
 
-	opts := &upstream.Options{
-		Timeout:            time.Duration(timeout) * time.Second,
-		InsecureSkipVerify: insecureSkipVerify,
-		HTTPVersions:       httpVersions,
-	}
+	AppendToFile(resultFileName, "client,reqID,url,elapsedTime")
+	var counter int = 1
+	for _, url := range list {
+		clean_url := CleanStr(url)
 
-	if len(os.Args) == 4 {
-		ip := net.ParseIP(os.Args[3])
-		if ip == nil {
-			log.Fatalf("invalid IP specified: %s", os.Args[3])
+		domain := clean_url
+		server := os.Args[1]
+
+		var httpVersions []upstream.HTTPVersion
+		if http3Enabled {
+			httpVersions = []upstream.HTTPVersion{
+				upstream.HTTPVersion3,
+				upstream.HTTPVersion2,
+				upstream.HTTPVersion11,
+			}
 		}
-		opts.ServerIPAddrs = []net.IP{ip}
-	}
 
-	u, err := upstream.AddressToUpstream(server, opts)
-	if err != nil {
-		log.Fatalf("Cannot create an upstream: %s", err)
-	}
+		opts := &upstream.Options{
+			Timeout:            time.Duration(timeout) * time.Second,
+			InsecureSkipVerify: insecureSkipVerify,
+			HTTPVersions:       httpVersions,
+		}
 
-	req := &dns.Msg{}
-	req.Id = dns.Id()
-	req.RecursionDesired = true
-	req.Question = []dns.Question{
-		{Name: domain + ".", Qtype: rrType, Qclass: class},
-	}
+		if len(os.Args) == 4 {
+			ip := net.ParseIP(os.Args[3])
+			if ip == nil {
+				log.Fatalf("invalid IP specified: %s", os.Args[3])
+			}
+			opts.ServerIPAddrs = []net.IP{ip}
+		}
 
-	if subnetOpt != nil {
-		opt := getOrCreateOpt(req, do)
-		opt.Option = append(opt.Option, subnetOpt)
-	}
-
-	if ednsOpt != nil {
-		opt := getOrCreateOpt(req, do)
-		opt.Option = append(opt.Option, ednsOpt)
-	}
-
-	if padding {
-		opt := getOrCreateOpt(req, do)
-		opt.Option = append(opt.Option, newEDNS0Padding(req))
-	}
-
-	startTime := time.Now()
-	reply, err := u.Exchange(req)
-	if err != nil {
-		log.Fatalf("Cannot make the DNS request: %s", err)
-	}
-
-	if !machineReadable {
-		msg := fmt.Sprintf("dnslookup result (elapsed %v):\n", time.Now().Sub(startTime))
-		os.Stdout.WriteString(msg)
-		os.Stdout.WriteString(reply.String() + "\n")
-	} else {
-		var b []byte
-		b, err = json.MarshalIndent(reply, "", "  ")
+		u, err := upstream.AddressToUpstream(server, opts)
 		if err != nil {
-			log.Fatalf("Cannot marshal json: %s", err)
+			log.Fatalf("Cannot create an upstream: %s", err)
 		}
 
-		os.Stdout.WriteString(string(b) + "\n")
+		req := &dns.Msg{}
+		req.Id = dns.Id()
+		req.RecursionDesired = true
+		req.Question = []dns.Question{
+			{Name: domain + ".", Qtype: rrType, Qclass: class},
+		}
+
+		if subnetOpt != nil {
+			opt := getOrCreateOpt(req, do)
+			opt.Option = append(opt.Option, subnetOpt)
+		}
+
+		if ednsOpt != nil {
+			opt := getOrCreateOpt(req, do)
+			opt.Option = append(opt.Option, ednsOpt)
+		}
+
+		if padding {
+			opt := getOrCreateOpt(req, do)
+			opt.Option = append(opt.Option, newEDNS0Padding(req))
+		}
+
+		startTime := time.Now()
+		reply, err := u.Exchange(req)
+		if err != nil {
+			log.Fatalf("Cannot make the DNS request: %s", err)
+		}
+
+		if !machineReadable {
+			str := fmt.Sprintf("%s,%d,%s,%s", hostname, counter, clean_url, time.Now().Sub(startTime))
+			AppendToFile(resultFileName, str)
+			fmt.Println(str)
+		} else {
+			var b []byte
+			b, err = json.MarshalIndent(reply, "", "  ")
+			if err != nil {
+				log.Fatalf("Cannot marshal json: %s", err)
+			}
+
+			os.Stdout.WriteString(string(b) + "\n")
+		}
+		counter += 1
+		if counter == 5 {
+			//log.Fatalf("short %i", counter)
+		}
 	}
 }
 
@@ -276,4 +310,46 @@ func newEDNS0Padding(req *dns.Msg) (option *dns.EDNS0_PADDING) {
 	}
 
 	return &dns.EDNS0_PADDING{Padding: make([]byte, padLen)}
+}
+
+func NewSlice(start, end, step int) []int {
+	if step <= 0 || end < start {
+		return []int{}
+	}
+	s := make([]int, 0, 1+(end-start)/step)
+	for start <= end {
+		s = append(s, start)
+		start += step
+	}
+	return s
+}
+
+func Shuffle(vals []int) []int {
+	r := rand.New(rand.NewSource(time.Now().Unix()))
+	ret := make([]int, len(vals))
+	perm := r.Perm(len(vals))
+	for i, randIndex := range perm {
+		ret[i] = vals[randIndex]
+	}
+	return ret
+}
+
+func GetTimeMs() string {
+	return time.Now().Format(time.StampMilli)
+}
+
+func CleanStr(str string) string {
+	str = strings.ReplaceAll(str, "\n", "")
+	return str
+}
+
+func AppendToFile(resultFileName string, str string) {
+	f, err := os.OpenFile(resultFileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Println(err)
+	}
+	defer f.Close()
+	if _, err := f.WriteString(str + "\n"); err != nil {
+		log.Println(err)
+	}
 }
