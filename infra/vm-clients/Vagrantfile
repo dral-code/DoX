@@ -36,7 +36,11 @@ Vagrant.configure("2") do |config|
           # Enable provisioning with a shell script. Additional provisioners such as
     # Ansible, Chef, Docker, Puppet and Salt are also available. Please see the
     # documentation for more information about their specific syntax and use.
-      node.vm.provision "shell", inline: <<-SHELL
+    node.vm.provision "shell" do |s|
+      s.inline = "hostnamectl set-hostname $1"
+      s.args = "'client-#{i}.rsx218-dox.cnam.fr'"
+    end
+    node.vm.provision "shell", inline: <<-SHELL
         dnf install epel-release -y
         yum config-manager --set-enabled powertools
         useradd -rs /bin/false node_exporter
