@@ -87,6 +87,5 @@ Vagrant.configure("2") do |config|
     systemctl start node_exporter.service 
     systemctl enable bind_exporter
     systemctl start bind_exporter.service
-    setenforce Permissive 
   SHELL
 end
