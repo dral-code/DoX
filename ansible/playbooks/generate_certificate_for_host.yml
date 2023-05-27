@@ -1,0 +1,86 @@
+---
+
+- name: 'Generate certificate for host'
+  hosts: 'all'
+  gather_facts: true
+  vars:
+    openssl_name: 'rsx218-dox'
+    openssl_ownca_dir: '/home/student/ca'
+    opensll_ownca_private_key: "{{ openssl_ownca_dir }}/private/cakey.pem"
+    opensll_ownca_path: "{{ openssl_ownca_dir }}/cacert.pem"
+  remote_user: vagrant
+
+  tasks: 
+    - name: 'Python OpenSSL package'
+      become: true
+      dnf:
+        name: 
+          - 'python3-cryptography'
+          - 'ca-certificates'
+
+    #- name: 'Install Python OpenSSL'
+    #  command: 'pip3 install pyOpenSSL'
+
+    - name: 'Generate private key'
+      become: true
+      openssl_privatekey:
+        path: "/etc/pki/tls/private/{{ openssl_name }}.key"
+    
+    - name: 'Generate CSR'
+      become: true
+      openssl_csr:
+        path: "/etc/pki/tls/private/{{ openssl_name }}.csr"
+        privatekey_path: "/etc/pki/tls/private/{{ openssl_name }}.key"
+        country_name: FR
+        organization_name: "Conservatoire National des Arts et Metiers"
+        common_name: "{{ openssl_name }}"
+        subject_alt_name: "DNS:{{ ansible_host }},DNS:{{ ansible_fqdn }}"
+
+    # Step 2
+    - name: 'Pull CSR'
+      become: true
+      fetch: 
+        src: "/etc/pki/tls/private/{{ openssl_name }}.csr"
+        dest: "{{ openssl_ownca_dir }}/{{ ansible_host }}/{{ openssl_name }}.csr"
+        flat: true
+
+    # Step 3
+    - name: 'Sign CSR with CA key'
+      connection: local
+      delegate_to: localhost
+      openssl_certificate:
+        path: "{{ openssl_ownca_dir }}/{{ ansible_host }}/{{ openssl_name }}.crt"
+        csr_path: "{{ openssl_ownca_dir }}/{{ ansible_host }}/{{ openssl_name }}.csr"
+        ownca_path: "{{ opensll_ownca_path }}"
+        ownca_privatekey_path: "{{ opensll_ownca_private_key }}"
+        ownca_privatekey_passphrase: "cnam" #need to be encrypted
+        provider: ownca
+
+    # Step 4
+    - name: 'Push certificate'
+      become: true
+      copy:
+        src: "{{ openssl_ownca_dir }}/{{ ansible_host }}/{{ openssl_name }}.crt"
+        dest: "/etc/pki/tls/private/{{ openssl_name }}.crt"
+
+    - name: 'Push CA'
+      become: true
+      copy: 
+        src: "{{ opensll_ownca_path }}"
+        dest: "/etc/pki/ca-trust/source/anchors/cacert.pem"
+
+    - name: 'Update CA Trust'
+      become: true
+      command: "update-ca-trust extract"
+
+    - name: 'Build PKCS12 file containing key and cert'
+      become: true
+      openssl_pkcs12:
+        select_crypto_backend: "cryptography"
+        action: export
+        path: "/etc/pki/tls/private/{{ openssl_name }}.p12"
+        friendly_name: "{{ openssl_name }}"
+        privatekey_path: "/etc/pki/tls/private/{{ openssl_name }}.key"
+        certificate_path: "/etc/pki/tls/private/{{ openssl_name }}.crt"
+        other_certificates: "/etc/pki/ca-trust/source/anchors/cacert.pem"
+        state: present
