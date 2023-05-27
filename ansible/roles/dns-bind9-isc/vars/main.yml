@@ -1,0 +1,5 @@
+---
+# vars file for Bind setup
+domain: rsx218-dox.cnam.fr
+
+rev_domain: 16.172.in-addr.arpa

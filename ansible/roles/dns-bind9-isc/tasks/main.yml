@@ -1,0 +1,34 @@
+---
+# tasks file for Bind setup
+- name: Configure repo isc-bind
+  command: "dnf copr enable -y isc/bind"
+
+- name: Install isc-bind
+  yum:
+    pkg: isc-bind
+    state: present
+
+- name: Configure isc-bind service
+  systemd:
+    state: started
+    enabled: true
+    name: isc-bind-named
+
+- name: Set hostname
+  hostname:
+    name: "{{ host_name }}"
+    use: 'systemd'
+
+- name: Set hostname fact
+  set_fact:
+    ansible_fqdn: "{{ host_name }}"
+
+- name: Copy named conf file
+  template:
+    src: named.conf.j2
+    dest: /etc/opt/isc/scls/isc-bind/named.conf
+    owner: root
+    group: named
+    mode: 0660
+  notify: restart named
+

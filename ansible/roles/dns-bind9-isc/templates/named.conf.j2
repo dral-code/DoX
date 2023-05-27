@@ -1,0 +1,28 @@
+options {
+    directory "/var/opt/isc/scls/isc-bind/named/data";
+	listen-on port 53 { 127.0.0.1; {{ ansible_ens6.ipv4.address }}; };
+#	listen-on-v6 port 53 { ::1; };
+	allow-query     { any; };
+	recursion yes;
+	empty-zones-enable yes;
+	forwarders {
+		192.168.56.2 port 453;
+	};
+	forward only;
+	dnssec-validation no;
+
+};
+
+statistics-channels {
+  inet 127.0.0.1 port 8053 allow { 127.0.0.1; };
+};
+
+logging {
+        channel default_debug {
+                file "named.run";
+				print-time yes;
+                severity dynamic;
+        };
+};
+
+
