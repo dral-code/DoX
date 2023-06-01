@@ -1,0 +1,6 @@
+ansible_ssh_extra_args=' -o StrictHostKeyChecking=no'
+controller ansible_connection=local
+do53-server  ansible_host=192.168.56.6 host_name=do53-server.rsx218-dox.cnam.fr ansible_ssh_private_key_file=../../infra/vm-do53/.vagrant/machines/default/libvirt/private_key
+
+[bind9]
+do53-server

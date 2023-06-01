@@ -1,0 +1,9 @@
+---
+- name: Set up Bind as Do53
+  hosts: do53-server
+  gather_facts: true
+  user: vagrant
+  become: true
+
+  roles:
+    - '../roles/dns-bind9-isc-53'
