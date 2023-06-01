@@ -1,0 +1,8 @@
+ansible_ssh_extra_args=' -o StrictHostKeyChecking=no'
+controller ansible_connection=local
+client-1  ansible_host=192.168.56.11 host_name=client-1.rsx218-dox.cnam.fr ansible_ssh_private_key_file=../../infra/vm-clients/.vagrant/machines/client-1/libvirt/private_key
+client-2  ansible_host=192.168.56.12 host_name=client-2.rsx218-dox.cnam.fr ansible_ssh_private_key_file=../../infra/vm-clients/.vagrant/machines/client-2/libvirt/private_key
+client-3  ansible_host=192.168.56.13 host_name=client-3.rsx218-dox.cnam.fr ansible_ssh_private_key_file=../../infra/vm-clients/.vagrant/machines/client-3/libvirt/private_key
+client-4  ansible_host=192.168.56.14 host_name=client-4.rsx218-dox.cnam.fr ansible_ssh_private_key_file=../../infra/vm-clients/.vagrant/machines/client-4/libvirt/private_key
+
+

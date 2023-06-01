@@ -34,7 +34,7 @@
         country_name: FR
         organization_name: "Conservatoire National des Arts et Metiers"
         common_name: "{{ openssl_name }}"
-        subject_alt_name: "DNS:{{ ansible_host }},DNS:{{ ansible_fqdn }}"
+        subject_alt_name: "DNS:{{ ansible_fqdn }},IP:{{ ansible_host }}"
 
     # Step 2
     - name: 'Pull CSR'

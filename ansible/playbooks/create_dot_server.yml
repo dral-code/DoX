@@ -1,9 +1,9 @@
 ---
-- name: Set up Bind
+- name: Set up Bind with Dns Over TLS
   hosts: dot-server
   gather_facts: true
   user: vagrant
   become: true
 
   roles:
-    - '../roles/dns-bind9-isc'
+    - '../roles/dns-bind9-isc-tls'

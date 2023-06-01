@@ -24,6 +24,7 @@
     ansible_fqdn: "{{ host_name }}"
 
 - name: Copy named conf file
+  tags: bind9-update
   template:
     src: named.conf.j2
     dest: /etc/opt/isc/scls/isc-bind/named.conf
