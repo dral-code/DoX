@@ -1,3 +1,14 @@
+# Modifications
+
+* The support of DNSCrypt has been removed to get a lighter program
+* Besides -h and -v, the only accepted parameter is the targeted server
+* Generate the dataset for the test
+* Modified output for real time informations
+* Generate a log file for statistics analysis
+* Add TEST environment variable for protocole analysis
+
+# Original page bellow
+
 [![Go Report Card](https://goreportcard.com/badge/github.com/ameshkov/dnslookup)](https://goreportcard.com/report/ameshkov/dnslookup)
 [![Latest release](https://img.shields.io/github/release/ameshkov/dnslookup/all.svg)](https://github.com/ameshkov/dnslookup/releases)
 [![Snap Store](https://snapcraft.io/dnslookup/badge.svg)](https://snapcraft.io/dnslookup)

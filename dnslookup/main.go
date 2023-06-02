@@ -24,6 +24,7 @@ var VersionString = "master"
 func main() {
 	// parse env variables
 	machineReadable := os.Getenv("JSON") == "1"
+	shortTest := os.Getenv("TEST") == "1"
 	insecureSkipVerify := os.Getenv("VERIFY") == "0"
 	timeoutStr := os.Getenv("TIMEOUT")
 	http3Enabled := os.Getenv("HTTP3") == "1"
@@ -176,8 +177,11 @@ func main() {
 			os.Stdout.WriteString(string(b) + "\n")
 		}
 		counter += 1
-		if counter == 5 {
-			//log.Fatalf("short %i", counter)
+		if shortTest {
+			time.Sleep(500 * time.Millisecond)
+		}
+		if counter == 5 && shortTest {
+			os.Exit(0)
 		}
 	}
 }
