@@ -1,0 +1,6 @@
+ansible_ssh_extra_args=' -o StrictHostKeyChecking=no'
+controller ansible_connection=local
+dnsproxy-server  ansible_host=192.168.56.5 host_name=dnsproxy-server.rsx218-dox.cnam.fr ansible_ssh_private_key_file=../../infra/vm-proxy/.vagrant/machines/default/libvirt/private_key
+
+[bind9]
+dnsproxy-server

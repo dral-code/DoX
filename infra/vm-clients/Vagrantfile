@@ -51,7 +51,8 @@ Vagrant.configure("2") do |config|
         restorecon -Rv /usr/local/bin
         systemctl daemon-reload
         systemctl enable node_exporter
-        systemctl start node_exporter.service 
+        systemctl start node_exporter.service
+        sysctl -w net.core.rmem_max=2500000 
       SHELL
     end
   end

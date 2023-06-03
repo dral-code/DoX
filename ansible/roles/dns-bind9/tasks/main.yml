@@ -1,6 +1,7 @@
 ---
 # tasks file for Bind setup
 - name: 'create serial based on actual timestamp'
+  tags: bind9-update
   command: date +%m%d%H%M%S
   register: timestamp
   check_mode: false
@@ -21,6 +22,7 @@
     ansible_fqdn: "{{ host_name }}"
 
 - name: Copy named conf file
+  tags: bind9-update
   template:
     src: named.conf.j2
     dest: /etc/named.conf
@@ -38,6 +40,7 @@
     mode: 0750
 
 - name: Copy named conf local file
+  tags: bind9-update
   template:
     src: named.conf.local.j2
     dest: /etc/named/named.conf.local
@@ -56,6 +59,7 @@
     mode: 0750
 
 - name: Copy forward file
+  tags: bind9-update
   template:
     src: db.forward.j2
     dest: "/etc/named/zones/db.{{ domain }}"
@@ -66,6 +70,7 @@
 
 
 - name: Copy reverse file
+  tags: bind9-update
   template:
     src: db.reverse.j2
     dest: "/etc/named/zones/db.{{ rev_domain }}"

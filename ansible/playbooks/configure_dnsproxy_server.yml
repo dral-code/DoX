@@ -1,0 +1,15 @@
+---
+- name: Configure server to use dnsproxy
+  hosts: dnsproxy-server
+  gather_facts: true
+  user: vagrant
+  become: true
+
+  tasks:
+    - name: Allow named access to certificate
+      tags: fix-cert
+      file:
+        path: "/etc/pki/tls/private/rsx218-dox.key"
+        owner: root
+        group: vagrant
+        mode: '640'
