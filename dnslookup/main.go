@@ -106,6 +106,16 @@ func main() {
 
 		domain := clean_url
 		server := os.Args[1]
+		switch {
+		case os.Args[1] == "do53":
+			server = "192.168.56.6"
+		case os.Args[1] == "dot":
+			server = "tls://192.168.56.3"
+		case os.Args[1] == "doh":
+			server = "https://192.168.56.4/dns-query"
+		case os.Args[1] == "doq":
+			server = "quic://192.168.56.5"
+		}
 
 		var httpVersions []upstream.HTTPVersion
 		if http3Enabled {
@@ -167,6 +177,9 @@ func main() {
 			str := fmt.Sprintf("%s,%d,%s,%s", hostname, counter, clean_url, time.Now().Sub(startTime))
 			AppendToFile(resultFileName, str)
 			fmt.Println(str)
+			if shortTest {
+				os.Stdout.WriteString(reply.String() + "\n")
+			}
 		} else {
 			var b []byte
 			b, err = json.MarshalIndent(reply, "", "  ")
