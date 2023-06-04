@@ -28,7 +28,17 @@ Dont't forget to install the ansible module requirements specified on the websit
 # Resolver/Forwarder
 
 ## Do53
+
+As we use two solutions (bind9 and DNS Proxy), we need a baseline for each.
+
+### bind version
 The bind9-isc package is used as forwarder for Do53. It's working out of the box after the deployment.
+
+### DNS Proxy version
+To run DNS Proxy in plain mode:
+```
+sudo ./dnsproxy -l 192.168.56.5 -u udp://192.168.56.2:453 -v
+```
 
 ## DoT
 The bind9-isc package is used as forwarder for DoT. It's working out of the box after the deployment.
