@@ -20,11 +20,7 @@ acl "trusted" {
 options {
         listen-on port 453 { 127.0.0.1; 192.168.56.2; };
         query-source port 453;
-#       listen-on-v6 port 53 { ::1; };
-        directory       "/var/named";
-        dump-file       "/var/named/data/cache_dump.db";
-        statistics-file "/var/named/data/named_stats.txt";
-        memstatistics-file "/var/named/data/named_mem_stats.txt";
+    directory "/var/opt/isc/scls/isc-bind/named/data";
         allow-query     { trusted; };
         allow-recursion     { trusted; };
         allow-query-cache     { trusted; };
@@ -41,17 +37,10 @@ options {
 	   reduce such attack surface
 	*/
 	recursion no;
+	tcp-idle-timeout 10;
 
-	dnssec-enable no;
 	dnssec-validation no;
 
-	/* Path to ISC DLV key */
-	bindkeys-file "/etc/named.iscdlv.key";
-
-	managed-keys-directory "/var/named/dynamic";
-
-	pid-file "/run/named/named.pid";
-	session-keyfile "/run/named/session.key";
 };
 
 statistics-channels {
@@ -60,14 +49,11 @@ statistics-channels {
 
 logging {
         channel default_debug {
-                file "data/named.run";
+                file "named.run";
+				print-time yes;
                 severity dynamic;
         };
 };
 
-zone "." IN {
-	type hint;
-	file "named.ca";
-};
 
-include "/etc/named/named.conf.local";
+include "/etc/opt/isc/scls/isc-bind/named/named.conf.local";

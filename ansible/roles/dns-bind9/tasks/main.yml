@@ -7,10 +7,19 @@
   check_mode: false
   run_once: true
 
-- name: Install bind
+- name: Configure repo isc-bind
+  command: "dnf copr enable -y isc/bind"
+
+- name: Install isc-bind
   yum:
-    pkg: bind
+    pkg: isc-bind
     state: present
+
+- name: Configure isc-bind service
+  systemd:
+    state: started
+    enabled: true
+    name: isc-bind-named
 
 - name: Set hostname
   hostname:
@@ -25,7 +34,7 @@
   tags: bind9-update
   template:
     src: named.conf.j2
-    dest: /etc/named.conf
+    dest: /etc/opt/isc/scls/isc-bind/named.conf
     owner: root
     group: named
     mode: 0660
@@ -33,7 +42,7 @@
 
 - name: Make named directory
   file:
-    path: /etc/named
+    path: /etc/opt/isc/scls/isc-bind/named
     state: directory
     owner: root
     group: named
@@ -43,7 +52,7 @@
   tags: bind9-update
   template:
     src: named.conf.local.j2
-    dest: /etc/named/named.conf.local
+    dest: /etc/opt/isc/scls/isc-bind/named/named.conf.local
     owner: root
     group: named
     mode: 0640
@@ -52,7 +61,7 @@
 
 - name: Make zones Directory
   file:
-    path: /etc/named/zones
+    path: /etc/opt/isc/scls/isc-bind/named/zones
     state: directory
     owner: root
     group: named
@@ -62,7 +71,7 @@
   tags: bind9-update
   template:
     src: db.forward.j2
-    dest: "/etc/named/zones/db.{{ domain }}"
+    dest: "/etc/opt/isc/scls/isc-bind/named/zones/db.{{ domain }}"
     owner: root
     group: named
     mode: 0640
@@ -73,7 +82,7 @@
   tags: bind9-update
   template:
     src: db.reverse.j2
-    dest: "/etc/named/zones/db.{{ rev_domain }}"
+    dest: "/etc/opt/isc/scls/isc-bind/named/zones/db.{{ rev_domain }}"
     owner: root
     group: named
     mode: 0640

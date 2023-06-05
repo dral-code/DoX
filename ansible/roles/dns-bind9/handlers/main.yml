@@ -2,5 +2,5 @@
 # handlers file for Bind setup
 - name: restart named
   service:
-    name: named
+    name: isc-bind-named
     state: restarted
