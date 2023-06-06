@@ -1,15 +1,15 @@
 $ORIGIN .
-$TTL 604800	; 1 week
+$TTL 300	; 5 minutes
 {{ rev_domain }}	IN SOA	{{ ansible_fqdn }}. admin.{{ domain }}. (
 				{{ timestamp.stdout }}          ; serial
-				604800     ; refresh (1 week)
-				86400      ; retry (1 day)
-				2419200    ; expire (4 weeks)
-				604800     ; minimum (1 week)
+				300     ; refresh (5 minutes)
+				300      ; retry (5 minutes)
+				300    ; expire (5 minutes)
+				300     ; minimum (5 minutes)
 				)
 			NS	{{ ansible_fqdn }}.
 $ORIGIN {{ rev_domain }}.
-$TTL 604800	; 1 week
+$TTL 300	; 5 minutes
 {% for num_domain in range(0,250) %}
 {%   for num_host in range(1,250) %}
 {{ num_domain }}.{{ num_host }}   PTR   {{ rev_domain }}

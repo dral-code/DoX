@@ -1,17 +1,17 @@
 $ORIGIN .
-$TTL 604800	; 1 week
+$TTL 300	; 5 minutes
 {{ domain }}	IN SOA	{{ ansible_fqdn }}. admin.{{ domain }}. (
 				{{ timestamp.stdout }}	; Serial
-				604800     ; Refresh (1 week)
-				86400      ; Retry (1 day)
-				2419200    ; Expire (4 weeks)
-				604800     ; Minimum (1 week)
+				300    ; Refresh (5 minutes)
+				300    ; Retry (5 minutes)
+				300    ; Expire (5 minutes)
+				300    ; Minimum (5 minutes)
 				)
         	    NS	{{ ansible_fqdn }}.
 
 $ORIGIN {{ domain }}.
 $TTL 300	; 5 minutes
-$TTL 604800	; 1 week
+$TTL 300	; 5 minutes
 
 vm-backend	A {{ ansible_host}}
 client-1	A	192.168.56.11
