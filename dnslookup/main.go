@@ -99,8 +99,9 @@ func main() {
 	now := time.Now().Unix()
 	resultFileName := hostname + "_result_" + strconv.FormatInt(now, 10) + ".log"
 
-	AppendToFile(resultFileName, "client,reqID,url,elapsedTime")
+	AppendToFile(resultFileName, "client,reqID,url,elapsedTime,averageReqTime")
 	var counter int = 1
+	var globalDurationMilliSeconds int64 = 0
 	for _, url := range list {
 		clean_url := CleanStr(url)
 
@@ -174,7 +175,10 @@ func main() {
 		}
 
 		if !machineReadable {
-			str := fmt.Sprintf("%s,%d,%s,%s", hostname, counter, clean_url, time.Now().Sub(startTime))
+			duration := time.Now().Sub(startTime)
+			globalDurationMilliSeconds += duration.Microseconds()
+			avgDuration := float64(globalDurationMilliSeconds) / float64(counter) / float64(1000)
+			str := fmt.Sprintf("%s,%d,%s,%s,%fms", hostname, counter, clean_url, duration, avgDuration)
 			AppendToFile(resultFileName, str)
 			fmt.Println(str)
 			if shortTest {
