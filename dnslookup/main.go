@@ -25,6 +25,7 @@ func main() {
 	// parse env variables
 	machineReadable := os.Getenv("JSON") == "1"
 	shortTest := os.Getenv("TEST") == "1"
+	limitNbReqBool := os.Getenv("LIMIT") == "1"
 	insecureSkipVerify := os.Getenv("VERIFY") == "0"
 	timeoutStr := os.Getenv("TIMEOUT")
 	http3Enabled := os.Getenv("HTTP3") == "1"
@@ -97,25 +98,46 @@ func main() {
 		list[i], list[j] = list[j], list[i]
 	})
 	now := time.Now().Unix()
-	resultFileName := hostname + "_result_" + strconv.FormatInt(now, 10) + ".log"
+	server := os.Args[1]
+	serverForFile := ""
+	switch {
+	case os.Args[1] == "do53":
+		server = "192.168.56.6"
+		serverForFile = "do53_"
+	case os.Args[1] == "dot":
+		server = "tls://192.168.56.3"
+		serverForFile = "dot_"
+	case os.Args[1] == "doh":
+		server = "https://192.168.56.4/dns-query"
+		serverForFile = "doh_"
+	case os.Args[1] == "proxy-do53":
+		server = "192.168.56.5:53"
+		serverForFile = "proxy-do53_"
+	case os.Args[1] == "proxy-dot":
+		server = "tls://192.168.56.5"
+		serverForFile = "proxy-dot_"
+	case os.Args[1] == "proxy-doh":
+		server = "https://192.168.56.5/dns-query"
+		serverForFile = "proxy-doh_"
+	case os.Args[1] == "proxy-doq":
+		server = "quic://192.168.56.5"
+		serverForFile = "proxy-doq_"
+	}
+	resultFileName := hostname + "_" + serverForFile + "result_" + strconv.FormatInt(now, 10) + ".log"
 
 	AppendToFile(resultFileName, "client,reqID,url,elapsedTime,averageReqTime")
 	var counter int = 1
+	var limitNbReq int = 100000
 	var globalDurationMilliSeconds int64 = 0
 	for _, url := range list {
 		clean_url := CleanStr(url)
 
 		domain := clean_url
-		server := os.Args[1]
-		switch {
-		case os.Args[1] == "do53":
-			server = "192.168.56.6"
-		case os.Args[1] == "dot":
-			server = "tls://192.168.56.3"
-		case os.Args[1] == "doh":
-			server = "https://192.168.56.4/dns-query"
-		case os.Args[1] == "doq":
-			server = "quic://192.168.56.5"
+		if shortTest && limitNbReqBool {
+			limitNbReq = 5
+		}
+		if limitNbReqBool {
+			limitNbReq = 10001
 		}
 
 		var httpVersions []upstream.HTTPVersion
@@ -197,7 +219,7 @@ func main() {
 		if shortTest {
 			time.Sleep(500 * time.Millisecond)
 		}
-		if counter == 5 && shortTest {
+		if counter == limitNbReq {
 			os.Exit(0)
 		}
 	}
