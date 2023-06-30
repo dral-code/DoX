@@ -133,8 +133,8 @@ func main() {
 		clean_url := CleanStr(url)
 
 		domain := clean_url
-		if shortTest && limitNbReqBool {
-			limitNbReq = 5
+		if shortTest {
+			limitNbReq = 6
 		}
 		if limitNbReqBool {
 			limitNbReq = 10001
